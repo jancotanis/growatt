@@ -11,7 +11,7 @@ module Growatt
     def initialize(options = {})
       super(options)
     end
-    
+
     # access data returned from login
     def login_info
       @login_data
@@ -47,7 +47,7 @@ module Growatt
     def inverter_data(inverter_id,type=Timespan::DAY,date=Time.now)
       _inverter_api({
         'op': 'getInverterData',
-        'id': inverter_id,
+        'inverterId': inverter_id,
         'type': type,
         'date': timespan_date(type,date)
       })
@@ -55,14 +55,20 @@ module Growatt
     def inverter_detail(inverter_id)
       _inverter_api({
         'op': 'getInverterDetailData',
-        'id': inverter_id
+        'inverterId': inverter_id
       })
     end
     def inverter_detail_two(inverter_id)
       _inverter_api({
         'op': 'getInverterDetailData_two',
-        'id': inverter_id
+        'inverterId': inverter_id
       })
+    end
+    def inverter_max_set_data(inverter_id)
+      _inverter_api({
+        'op': 'getMaxSetData',
+        'serialNum': inverter_id
+      }).obj.maxSetBean
     end
     def update_inverter_setting(serial_number,command,setting_type,parameters)
       command_parameters = {
@@ -71,10 +77,12 @@ module Growatt
         'type': setting_type
       }
       # repeated values to hash { param1: value1 }
-      
-      parameters = parameters.map.with_index { |value, index| ["param#{index + 1}", value] }.to_h if parameters.is_a? Array
 
-      data = post('newTcpsetAPI.do',command_parameters.merge(parameters))
+      parameters = parameters.map.with_index { |value, index| ["param#{index + 1}", value] }.to_h if parameters.is_a? Array
+      self.format = 'x-www-form-urlencoded'
+      data = JSON.parse(post('newTcpsetAPI.do',command_parameters.merge(parameters)).body)
+      self.format = :json
+      data['success']
     end
     def update_mix_inverter_setting(serial_number, setting_type, parameters)
       update_inverter_setting(serial_number,'mixSetApiNew',setting_type,parameters)
@@ -82,7 +90,16 @@ module Growatt
     def update_ac_inverter_setting(serial_number, setting_type, parameters)
       update_inverter_setting(serial_number,'spaSetApi',setting_type,parameters)
     end
-    
+
+    def turn_inverter(serial_number,on=true)
+      onoff = (on ? Inverter::ON : Inverter::OFF )
+      update_inverter_setting(serial_number,'maxSetApi',nil,{'paramId':'max_cmd_on_off','param1':onoff})
+    end
+    def inverter_on?(serial_number)
+      onoff = (on ? Inverter::ON : Inverter::OFF )
+      status = inverter_max_set_data(serial_number)
+      Inverter::ON.eql? status.max_cmd_on_off
+    end
 
     # utility function to get date accordign timespan month/day
     def timespan_date(timespan=Timespan::DAY,date=Time.now)
