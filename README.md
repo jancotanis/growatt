@@ -18,7 +18,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install tibber
+    $ gem install growatt
 
 ## Usage
 
@@ -30,7 +30,8 @@ require 'logger'
 
 # use do block
 Growatt.configure do |config|
-  config.access_token = ENV['GROWATT_ACCESS_TOKEN']
+  config.username = ENV['GROWATT_USERNAME']
+  config.password = ENV['GROWATT_PASSWORD']
   config.logger = Logger.new(TEST_LOGGER)
 end
 
@@ -56,29 +57,6 @@ end
 
 
 
-### Graph QL Data resources
-Endpoint for data related requests
-
-```ruby
-# show todays prices
-prices = client.price_info
-
-prices.homes.each do |home|
-  puts "Today's prices:"
-  home.currentSubscription.priceInfo.today.each do |hour|
-    puts "#{hour.startsAt} #{hour.total} #{hour.currency} (#{hour.energy} + #{hour.tax})"
-  end
-end
-
-```
-
-|Resource|API endpoint|
-|:--|:--|
-|.information | returns `name userId login accountType websocketSubscriptionUrl homes including homes meteringPointData, subscriptions` and `features` |
-|.price_info|price information for all `homes[id,currentSubscription{priceInfo{current,today[],tomorrow[]}}]`  |
-|.consumption(home_id, resolution, count)|Array of `home.consumption.nodes[]`: `from to cost unitPrice unitPriceVAT consumption consumptionUnit`|
-|.send_push_notification(title, message, screen_to_open)| send notificartion ot devices and returns `successful` & `pushedToNumberOfDevices`|
-
 ## Publishing
 
 1. Update version in [version.rb](lib/growatt/version.rb).
@@ -95,7 +73,7 @@ end
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/jancotanis/tibber.
+Bug reports and pull requests are welcome on GitHub at https://github.com/jancotanis/growatt.
 
 ## License
 
