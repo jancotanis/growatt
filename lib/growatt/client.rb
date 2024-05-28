@@ -41,9 +41,58 @@ module Growatt
 
     def inverter_list(plant_id)
       devices = device_list(plant_id)
-      inverters = devices.select { |device| 'inverter'.eql? device.deviceType  }
+      devices.select { |device| 'inverter'.eql? device.deviceType  }
     end
 
+    # get data for invertor control
+    def inverter_control_data(inverter_id)
+      r = _inverter_api({
+        'op': 'getMaxSetData',
+        'serialNum': inverter_id
+      })
+puts ">>>> #{r.to_json}"
+      r.obj.maxSetBean
+    end
+
+    def update_inverter_setting(serial_number,command,setting_type,parameters)
+      command_parameters = {
+        'op': command,
+        'serialNum': serial_number,
+        'type': setting_type
+      }
+      # repeated values to hash { param1: value1 }
+
+      parameters = parameters.map.with_index { |value, index| ["param#{index + 1}", value] }.to_h if parameters.is_a? Array
+      self.format = 'x-www-form-urlencoded'
+      data = JSON.parse(post('newTcpsetAPI.do',command_parameters.merge(parameters)).body)
+      self.format = :json
+      data['success']
+    end
+
+    # turn invertor on of off
+    def turn_inverter(serial_number,on=true)
+      onoff = (on ? Inverter::ON : Inverter::OFF )
+      update_inverter_setting(serial_number,'maxSetApi',nil,{'paramId':'max_cmd_on_off','param1':onoff})
+    end
+
+    # check if invertor is turned on
+    def inverter_on?(serial_number)
+      status = inverter_control_data(serial_number)
+      Inverter::ON.eql? status.max_cmd_on_off
+    end
+
+    # utility function to get date accordign timespan month/day
+    def timespan_date(timespan=Timespan::DAY,date=Time.now)
+      if Timespan::MONTH.eql? timespan
+        date.strftime("%Y-%m")
+      else
+        date.strftime("%Y-%m-%d")
+      end
+    end
+
+    #
+    # functions below are copied from python example code but not sure if these work with MOD9000 inverters
+    #
     def inverter_data(inverter_id,type=Timespan::DAY,date=Time.now)
       _inverter_api({
         'op': 'getInverterData',
@@ -64,26 +113,6 @@ module Growatt
         'inverterId': inverter_id
       })
     end
-    def inverter_max_set_data(inverter_id)
-      _inverter_api({
-        'op': 'getMaxSetData',
-        'serialNum': inverter_id
-      }).obj.maxSetBean
-    end
-    def update_inverter_setting(serial_number,command,setting_type,parameters)
-      command_parameters = {
-        'op': command,
-        'serialNum': serial_number,
-        'type': setting_type
-      }
-      # repeated values to hash { param1: value1 }
-
-      parameters = parameters.map.with_index { |value, index| ["param#{index + 1}", value] }.to_h if parameters.is_a? Array
-      self.format = 'x-www-form-urlencoded'
-      data = JSON.parse(post('newTcpsetAPI.do',command_parameters.merge(parameters)).body)
-      self.format = :json
-      data['success']
-    end
     def update_mix_inverter_setting(serial_number, setting_type, parameters)
       update_inverter_setting(serial_number,'mixSetApiNew',setting_type,parameters)
     end
@@ -91,30 +120,13 @@ module Growatt
       update_inverter_setting(serial_number,'spaSetApi',setting_type,parameters)
     end
 
-    def turn_inverter(serial_number,on=true)
-      onoff = (on ? Inverter::ON : Inverter::OFF )
-      update_inverter_setting(serial_number,'maxSetApi',nil,{'paramId':'max_cmd_on_off','param1':onoff})
-    end
-    def inverter_on?(serial_number)
-      onoff = (on ? Inverter::ON : Inverter::OFF )
-      status = inverter_max_set_data(serial_number)
-      Inverter::ON.eql? status.max_cmd_on_off
-    end
-
-    # utility function to get date accordign timespan month/day
-    def timespan_date(timespan=Timespan::DAY,date=Time.now)
-      if Timespan::MONTH.eql? timespan
-        date.strftime("%Y-%m")
-      else
-        date.strftime("%Y-%m-%d")
-      end
-    end
 
   private
     def self.api_endpoint(method,path)
       # all records
       self.send(:define_method, method) do |params = {}|
-        data = get(path,params)
+        # return data result
+        get(path,params)
       end
     end
     api_endpoint :_plant_list, 'PlantListAPI.do'
