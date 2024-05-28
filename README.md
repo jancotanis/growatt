@@ -1,7 +1,7 @@
 # Growatt API
 [![Version](https://img.shields.io/gem/v/growatt.svg)](https://rubygems.org/gems/growatt)
 
-This is a wrapper for the Growatt rest API.
+This is a wrapper for the Growatt rest API. Main objective is to turn inverter on/off. This has been testen with MOD-9000TL-X.
 
 
 ## Installation
@@ -49,6 +49,8 @@ client.login
 begin
   client = Growatt.client
   client.login
+  # turn invertor off
+  client.turn_inverter('<serial_no>', false)
 rescue Growatt::AuthenticationError => e
   puts "Error logging in growatt api"
   puts e
@@ -78,4 +80,4 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/jancot
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-"# growatt" 
+"# growatt"
