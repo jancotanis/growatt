@@ -46,12 +46,10 @@ module Growatt
 
     # get data for invertor control
     def inverter_control_data(inverter_id)
-      r = _inverter_api({
+      _inverter_api({
         'op': 'getMaxSetData',
         'serialNum': inverter_id
-      })
-puts ">>>> #{r.to_json}"
-      r.obj.maxSetBean
+      }).obj.maxSetBean
     end
 
     def update_inverter_setting(serial_number,command,setting_type,parameters)
