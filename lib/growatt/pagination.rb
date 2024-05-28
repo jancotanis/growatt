@@ -10,15 +10,15 @@ module Growatt
 
       def self.data(body)
         # data is at 'back'
-        if body['back']
-          body['back']
-        else
-          if body.is_a? Hash
-            body
+        if body.is_a? Hash
+          if body['back']
+            body['back']
           else
-            # in some cases wrong contenttype is returned instead of app/json
-            JSON.parse(body)
+            body
           end
+        else
+          # in some cases wrong contenttype is returned instead of app/json
+          JSON.parse(body)
         end
       end
     end
