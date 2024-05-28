@@ -3,7 +3,7 @@ require 'logger'
 require 'test_helper'
 
 def p m, o
-  puts "#{m}: #{o.inspect}"
+#  puts "#{m}: #{o.inspect}"
 end
 
 describe 'client' do
@@ -29,14 +29,16 @@ p "\n* plant detail", detail
 
     plant_info = @client.plant_info(plant_id)
 p "\n* plant info:", plant_info
-puts plant_info.class
 
     devices = @client.device_list(plant_id)
 p "\n* devices:", plant_info.deviceList
     inverter = devices.first
     # turn device on
-    assert @client.turn_inverter(inverter.deviceSn,true), "inverter on should be success"
+    result = @client.turn_inverter(inverter.deviceSn,true)
 p "\n* turnon result:", result
-    assert @client.inverter_on?(inverter.deviceSn), "Inverter should be on"
+    is_on = @client.inverter_on?(inverter.deviceSn)
+
+    assert result, "inverter on should be success"
+    assert is_on, "Inverter should be on"
   end
 end
