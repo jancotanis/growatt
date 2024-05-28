@@ -12,4 +12,8 @@ module Growatt
     DAY = 1
     MONTH = 2
   end
+  class Inverter
+    ON = "0101"
+    OFF = "0000"
+  end
 end
