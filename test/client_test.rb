@@ -38,7 +38,7 @@ p "\n* devices:", plant_info.deviceList
 p "\n* turnon result:", result
     is_on = @client.inverter_on?(inverter.deviceSn)
 
-    assert result, "inverter on should be success"
     assert is_on, "Inverter should be on"
+    assert result, "inverter on should be success"
   end
 end
