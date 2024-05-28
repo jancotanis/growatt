@@ -1,5 +1,4 @@
 require 'faraday'
-require 'faraday/follow_redirects'
 require 'faraday-cookie_jar'
 
 module Growatt
@@ -10,7 +9,6 @@ module Growatt
 
       options = setup_options
       @connection ||= Faraday::Connection.new(options) do |connection|
-#        connection.use Faraday::FollowRedirects::Middleware, limit: 10
         connection.use :cookie_jar
 
         connection.use Faraday::Response::RaiseError
