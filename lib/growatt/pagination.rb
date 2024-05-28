@@ -8,12 +8,17 @@ module Growatt
 
     class DataPager < WrAPI::RequestPagination::DefaultPager
 
-      def self.data(body) 
+      def self.data(body)
         # data is at 'back'
         if body['back']
           body['back']
         else
-          body
+          if body.is_a? Hash
+            body
+          else
+            # in some cases wrong contenttype is returned instead of app/json
+            JSON.parse(body)
+          end
         end
       end
     end
