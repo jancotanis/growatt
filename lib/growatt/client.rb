@@ -52,11 +52,11 @@ module Growatt
       }).obj.maxSetBean
     end
 
-    def update_inverter_setting(serial_number,command,setting_type,parameters)
+    def update_inverter_setting(serial_number,command,param_id,parameters)
       command_parameters = {
         'op': command,
         'serialNum': serial_number,
-        'type': setting_type
+        'paramId': param_id
       }
       # repeated values to hash { param1: value1 }
 
@@ -70,13 +70,24 @@ module Growatt
     # turn invertor on of off
     def turn_inverter(serial_number,on=true)
       onoff = (on ? Inverter::ON : Inverter::OFF )
-      update_inverter_setting(serial_number,'maxSetApi',nil,{'paramId':'max_cmd_on_off','param1':onoff})
+      update_inverter_setting(serial_number,'maxSetApi','max_cmd_on_off',[onoff])
     end
 
     # check if invertor is turned on
     def inverter_on?(serial_number)
       status = inverter_control_data(serial_number)
       Inverter::ON.eql? status.max_cmd_on_off
+    end
+
+    def export_limitation(serial_number,enable,value=nil)
+      if Inverter::DISABLE.eql? enable
+        params = [0]
+      else
+        raise ArgumentError, "exportlimitation enable should be Inverter::WATT or Inverter::PERCENTAGE" unless [Inverter::WATT,Inverter::PERCENTAGE].include? enable
+        raise ArgumentError, "Value should be set for export limitation" unless value
+        params = [1, value, enable]
+      end
+      update_inverter_setting(serial_number,'maxSetApi','backflow_setting',params)
     end
 
     # utility function to get date accordign timespan month/day

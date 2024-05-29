@@ -12,8 +12,13 @@ module Growatt
     DAY = 1
     MONTH = 2
   end
+
   class Inverter
     ON = "0101"
     OFF = "0000"
+    DISABLE = -1
+    WATT = 1
+    PERCENTAGE = 0
   end
+
 end

@@ -41,4 +41,19 @@ p "\n* turnon result:", result
     assert is_on, "Inverter should be on"
     assert result, "inverter on should be success"
   end
+  it "#3 export limitation parameters" do
+
+    assert_raises ArgumentError do
+      @client.export_limitation('xxxx', 4)
+      flunk( 'ArgumentError expected, invalid limtation' )
+    end
+    assert_raises ArgumentError do
+      @client.export_limitation('xxxx', Growatt::Inverter::WATT)
+      flunk( 'ArgumentError expected, no value given for WATTs' )
+    end
+    assert_raises ArgumentError do
+      @client.export_limitation('xxxx',Growatt:: Inverter::PERCENTAGE)
+      flunk( 'ArgumentError expected, no value given for PERCENTAGEs' )
+    end
+  end
 end
