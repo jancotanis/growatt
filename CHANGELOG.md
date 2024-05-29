@@ -4,3 +4,5 @@
 - Initial release
 ## [0.1.1] - 2024-05-28
 - remove unused require
+## [0.1.2] - 2024-05-29
+- add missing dependency
