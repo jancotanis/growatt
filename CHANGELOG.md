@@ -8,3 +8,5 @@
 - add missing dependency
 ## [0.1.3] - 2024-05-30
 - fix api issues to get inverter data
+## [0.1.4] - 2024-05-30
+- fix api issues where some api require correct Accept header 

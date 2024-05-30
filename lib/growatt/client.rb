@@ -146,7 +146,9 @@ module Growatt
       # all records
       self.send(:define_method, method) do |params = {}|
         # return data result
-        get(path,params)
+        get(path,params) do |request|
+          request.headers['Accept'] = "application/#{format}"
+        end
       end
     end
     api_endpoint :_plant_list, 'PlantListAPI.do'

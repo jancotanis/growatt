@@ -35,6 +35,11 @@ p "\n* devices:", plant_info.deviceList
     inverter = devices.first
     # get data
     data = @client.inverter_data(inverter.deviceSn,Growatt::Timespan::DAY,Time.now)
+    assert data, "Get day data by hour"
+    data = @client.inverter_data(inverter.deviceSn,Growatt::Timespan::MONTH,Time.now)
+    assert data, "Get month data by day"
+    data = @client.inverter_data(inverter.deviceSn,Growatt::Timespan::YEAR,Time.now)
+    assert data, "Get year data by month"
 puts "\n* Inverter data:"
 puts data.to_json
 
