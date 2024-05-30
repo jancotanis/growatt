@@ -33,6 +33,11 @@ p "\n* plant info:", plant_info
     devices = @client.device_list(plant_id)
 p "\n* devices:", plant_info.deviceList
     inverter = devices.first
+    # get data
+    data = @client.inverter_data(inverter.deviceSn,Growatt::Timespan::DAY,Time.now)
+puts "\n* Inverter data:"
+puts data.to_json
+
     # turn device on
     result = @client.turn_inverter(inverter.deviceSn,true)
 p "\n* turnon result:", result

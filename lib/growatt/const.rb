@@ -7,10 +7,12 @@ module Growatt
         end
       end
   end
+
   class Timespan
     HOUR = 0
     DAY = 1
     MONTH = 2
+    YEAR = 3
   end
 
   class Inverter

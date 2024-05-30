@@ -92,9 +92,11 @@ module Growatt
 
     # utility function to get date accordign timespan month/day
     def timespan_date(timespan=Timespan::DAY,date=Time.now)
-      if Timespan::MONTH.eql? timespan
+      if Timespan::YEAR.eql? timespan
+        date.strftime("%Y")
+      elsif Timespan::MONTH.eql? timespan
         date.strftime("%Y-%m")
-      else
+      elsif Timespan::DAY.eql? timespan
         date.strftime("%Y-%m-%d")
       end
     end
@@ -103,13 +105,21 @@ module Growatt
     # functions below are copied from python example code but not sure if these work with MOD9000 inverters
     #
     def inverter_data(inverter_id,type=Timespan::DAY,date=Time.now)
+      if Timespan::DAY.eql? type
+        operator = 'getInverterData_max'
+      elsif Timespan::MONTH.eql? type
+        operator = 'getMaxMonthPac'
+      elsif Timespan::YEAR.eql? type
+        operator = 'getMaxYearPac'
+      end
       _inverter_api({
-        'op': 'getInverterData',
-        'inverterId': inverter_id,
-        'type': type,
+        'op': operator,
+        'id': inverter_id,
+        'type': 1,
         'date': timespan_date(type,date)
       })
     end
+=begin
     def inverter_detail(inverter_id)
       _inverter_api({
         'op': 'getInverterDetailData',
@@ -122,6 +132,7 @@ module Growatt
         'inverterId': inverter_id
       })
     end
+=end
     def update_mix_inverter_setting(serial_number, setting_type, parameters)
       update_inverter_setting(serial_number,'mixSetApiNew',setting_type,parameters)
     end
