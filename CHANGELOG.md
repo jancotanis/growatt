@@ -6,3 +6,5 @@
 - remove unused require
 ## [0.1.2] - 2024-05-29
 - add missing dependency
+## [0.1.3] - 2024-05-30
+- fix api issues to get inverter data
