@@ -18,6 +18,9 @@ module Growatt
   class Inverter
     ON = "0101"
     OFF = "0000"
+  end
+
+  class ExportLimit
     DISABLE = -1
     WATT = 1
     PERCENTAGE = 0

@@ -54,15 +54,15 @@ p "\n* turnon result:", result
   it "#3 export limitation parameters" do
 
     assert_raises ArgumentError do
-      @client.export_limitation('xxxx', 4)
+      @client.export_limit('xxxx', 4)
       flunk( 'ArgumentError expected, invalid limtation' )
     end
     assert_raises ArgumentError do
-      @client.export_limitation('xxxx', Growatt::Inverter::WATT)
+      @client.export_limit('xxxx', Growatt::ExportLimit::WATT)
       flunk( 'ArgumentError expected, no value given for WATTs' )
     end
     assert_raises ArgumentError do
-      @client.export_limitation('xxxx',Growatt:: Inverter::PERCENTAGE)
+      @client.export_limit('xxxx',Growatt::ExportLimit::PERCENTAGE)
       flunk( 'ArgumentError expected, no value given for PERCENTAGEs' )
     end
   end

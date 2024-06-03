@@ -79,11 +79,11 @@ module Growatt
       Inverter::ON.eql? status.max_cmd_on_off
     end
 
-    def export_limitation(serial_number,enable,value=nil)
-      if Inverter::DISABLE.eql? enable
+    def export_limit(serial_number,enable,value=nil)
+      if ExportLimit::DISABLE.eql? enable
         params = [0]
       else
-        raise ArgumentError, "exportlimitation enable should be Inverter::WATT or Inverter::PERCENTAGE" unless [Inverter::WATT,Inverter::PERCENTAGE].include? enable
+        raise ArgumentError, "exportlimitation enable should be ExportLimit::WATT or ExportLimit::PERCENTAGE" unless [ExportLimit::WATT,ExportLimit::PERCENTAGE].include? enable
         raise ArgumentError, "Value should be set for export limitation" unless value
         params = [1, value, enable]
       end
