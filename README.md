@@ -1,5 +1,7 @@
 # Growatt API
 [![Version](https://img.shields.io/gem/v/growatt.svg)](https://rubygems.org/gems/growatt)
+[![Maintainability](https://api.codeclimate.com/v1/badges/60e7b62db0513a99ae4a/maintainability)](https://codeclimate.com/github/jancotanis/growatt/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/60e7b62db0513a99ae4a/test_coverage)](https://codeclimate.com/github/jancotanis/growatt/test_coverage)
 
 This is a wrapper for the Growatt rest API. Main objective is to turn inverter on/off. This has been testen with MOD-9000TL-X.
 
@@ -22,12 +24,12 @@ Or install it yourself as:
 
 ## Usage
 
-Before you start making the requests to API provide the endpoint and api key using the configuration wrapping.
+Before you start making the requests to API provide the username and password using with Shinephone app.
 
 ```ruby
 require 'growatt'
 require 'logger'
-
+TEST_LOGGER = './test.log'
 # use do block
 Growatt.configure do |config|
   config.username = ENV['GROWATT_USERNAME']
@@ -42,7 +44,7 @@ client.login
 ```
 
 ## Resources
-### Authentication
+### Authentication and configuration
 ```ruby
 # setup
 #
@@ -56,8 +58,34 @@ rescue Growatt::AuthenticationError => e
   puts e
 end
 ```
+### Read data
+```
+# create client (don't forget to configure authentication)
+# get data for first inverter for first defined plant
+plants = client.plant_list
+plant_id = plants.data.first.plantId
+devices = client.inverter_list(plant_id)
+inverter = devices.first
 
+yymm = Time.now.strftime("%Y%m")
+puts "- loading period #{yymm}"
+data = client.inverter_data(inverter.deviceSn,Growatt::Timespan::MONTH,current_month)
 
+```
+
+### Control
+```
+# continu from read data example above
+inverter = devices.first
+
+# turn inverter on/of
+client.turn_inverter(inverter.deviceSn, false)
+
+# or limit energy export
+client.export_limit(inverter.deviceSn,Growatt::ExportLimit::PERCENTAGE, 100)
+# allow energy export to grid
+client.export_limit(inverter.deviceSn,Growatt::ExportLimit::DISABLE)
+```
 
 ## Publishing
 
