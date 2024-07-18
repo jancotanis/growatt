@@ -7,21 +7,26 @@ module Growatt
 
     # Authorize to the Growatt portal
     def login()
-      raise ConfigurationError, "Username/password not set" unless username || password
-      _password = hash_password(self.password) #unless is_password_hashed
+      if username && password
+        _password = hash_password(self.password) #unless is_password_hashed
 
-      _format = self.format
-      self.format = 'x-www-form-urlencoded'
-      response = post('newTwoLoginAPI.do', {'userName': self.username, 'password': _password})
-      self.format = _format
-      data = response.body['back']
-      if data && data['success']
-        @login_data = data
-        data
+        _format = self.format
+        self.format = 'x-www-form-urlencoded'
+        response = post('newTwoLoginAPI.do', {'userName': self.username, 'password': _password})
+        self.format = _format
+        data = response.body['back']
+
+        if data && data['success']
+          @login_data = data
+          data
+        else
+          raise AuthenticationError.new(data['error'])
+        end
       else
-        raise AuthenticationError.new(data['error'])
+        raise ConfigurationError, "Username/password not set" unless username || password
       end
     end
+
   private
     def hash_password(password)
       password_md5 = Digest::MD5.hexdigest(password.encode('utf-8'))
