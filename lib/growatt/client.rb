@@ -83,8 +83,7 @@ module Growatt
       if ExportLimit::DISABLE.eql? enable
         params = [0]
       else
-        raise ArgumentError, "exportlimitation enable should be ExportLimit::WATT or ExportLimit::PERCENTAGE" unless [ExportLimit::WATT,ExportLimit::PERCENTAGE].include? enable
-        raise ArgumentError, "Value should be set for export limitation" unless value
+        validate_export_parameters(enable,value)
         params = [1, value, enable]
       end
       update_inverter_setting(serial_number,'maxSetApi','backflow_setting',params)
@@ -156,5 +155,10 @@ module Growatt
     api_endpoint :_inverter_api, 'newInverterAPI.do'
     api_endpoint :_plant_info, 'newTwoPlantAPI.do'
 
+    def validate_export_parameters(enable,value)
+      raise ArgumentError, "exportlimitation enable should be ExportLimit::WATT or ExportLimit::PERCENTAGE" unless [ExportLimit::WATT,ExportLimit::PERCENTAGE].include? enable
+      raise ArgumentError, "Value should be set for export limitation" unless value
+      raise ArgumentError, "Value should be numeric" unless value.is_a? Numeric
+    end
   end
 end
