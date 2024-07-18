@@ -54,12 +54,13 @@ begin
   # turn invertor off
   client.turn_inverter('<serial_no>', false)
 rescue Growatt::AuthenticationError => e
-  puts "Error logging in growatt api"
+  puts "Error login to growatt api"
   puts e
 end
 ```
 ### Read data
-```
+
+```ruby
 # create client (don't forget to configure authentication)
 # get data for first inverter for first defined plant
 plants = client.plant_list
@@ -74,7 +75,8 @@ data = client.inverter_data(inverter.deviceSn,Growatt::Timespan::MONTH,current_m
 ```
 
 ### Control
-```
+
+```ruby
 # continu from read data example above
 inverter = devices.first
 
@@ -100,6 +102,7 @@ client.export_limit(inverter.deviceSn,Growatt::ExportLimit::DISABLE)
 5. Release
 ```
 > rake release
+```
 
 ## Contributing
 
