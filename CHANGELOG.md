@@ -12,3 +12,5 @@
 - fix api issues where some api require correct Accept header
 ## [0.2.0] - 2024-06-03
 - rename method to reflect export limitations
+## [0.2.1] - 2025-03-19
+- add dcumenttion

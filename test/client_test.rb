@@ -13,7 +13,11 @@ describe 'client' do
   end
 
   it '#1 GET info' do
-
+    cfg = @client.config
+    assert _(cfg[:endpoint]).must_equal Growatt::DEFAULT_ENDPOINT
+    @client.reset
+    cfg = @client.config
+    assert _(cfg[:endpoint]).must_equal(nil)
   end
 
   it "#2 plant/device list" do
